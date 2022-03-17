@@ -137,6 +137,17 @@ def update_cart():
         return jsonify(message=str(e)), 412
 
 
+@app.route("/get_cart_item", methods=['GET'])
+@authenticate
+def get_cart_item():
+    try:
+        db = create_mongo_connection()
+        documents = db.carts.find({})
+        return jsonify(data=list(documents)), 200
+    except Exception as e:
+        return jsonify(message=str(e)), 412
+
+
 @app.route("/delete_cart", methods=['DELETE'])
 @authenticate
 def delete_cart():
@@ -151,6 +162,29 @@ def delete_cart():
         return jsonify(message="Item id required."), 412
     except Exception as e:
         return jsonify(message=str(e)), 412
+
+
+@app.route("/get_items_by_category", methods=['GET'])
+def get_items_by_category():
+    try:
+        offset = int(request.args.get('offset', 0))
+        limit = int(request.args.get('limit', 5))
+        category = request.args.get('category')
+        if category:
+            db = create_mongo_connection()
+            documents = db.items.find({"name": category}).limit(limit).skip(offset)
+            count = db.items.count_documents({"name": category})
+            response = {
+                'data': list(documents),
+                'next_offset': offset + limit,
+                'limit': 5,
+                'total_count': count
+            }
+            return jsonify(response), 200
+        return jsonify(message="Category is empty."), 412
+    except Exception as e:
+        return jsonify(message=str(e)), 412
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
