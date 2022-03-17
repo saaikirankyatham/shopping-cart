@@ -1,18 +1,11 @@
-from flask import Flask, Response, request
 import datetime
 import jwt
-import pymongo
-from flask import Flask, jsonify, request
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token
-from utility.DBConnectivity import create_mongo_connection
 import uuid
-# from flask.ext.bcrypt import Bcrypt
-from flask import Flask, jsonify, make_response, request
+
+from flask import Flask, jsonify, request
+from utility.DBConnectivity import create_mongo_connection
 from werkzeug.security import generate_password_hash,check_password_hash
 from functools import wraps
-import uuid
-import jwt
-import datetime
 
 app = Flask(__name__)
 
